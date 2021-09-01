@@ -1,0 +1,77 @@
+
+
+classes:
+    particle
+
+    tether (two particle ids and radious)?
+
+    box(some corner, and the vector from that corner to the oposite corner)
+
+    rules_set
+
+    rules
+
+    triangle(three points each represented as a std::array<double, DIMS>, and possibly a species id for storing complex colission rules in the ruleset)
+
+
+
+models:
+    particle_volume
+        holds particles
+        anounces changes
+        takes in "replace particle by id" messages used to colide/move/create(if it isn't already there) particles)
+        tells the next volume in line when a particle crosses a boundry
+        also maintains the defered dt for all of its particles
+
+    blocking_colider
+        listens to some number of volumes
+        when a particle is anounced by some volume, look in the volumes that it *could* hit next for its next blocking colission if any, and anounce store it
+        also rerun any particles that were going to hit the non-updated version of that particle recursively
+        or just recalc them all
+
+        time advance is time to next expected colission
+        output is to the relevant volumes with particle replacements
+
+    tethering_colider
+        stores some list of the tethers that it maintains
+        listens to some number of volumes
+        when a particle that has at least one known teather is updated, recalculate all of its next tethering colissions, also recursively just like the blocking colider
+
+        time advance is time to next expected colission
+        output is to the relevant volumes with particle replacements
+
+    triangle_collider (possible, but not fir first draft)
+        stores some list of triangles
+        listens to every volume that intersects/contains some triangle
+        when a particle update is anounced, find which triangle if any it will hit next
+
+        time advance is time to next expected colission
+        output is to the relevant volumes with particle replacements
+
+    box_collider
+        stores some list of alligned bounding boxes
+        listens to every volume that instersects/contains some box
+        standard updates
+
+
+functions:
+    deferred_dv_applied(particle) -> particle
+    time_advanced(particle, time) -> particle
+
+    next_blocking_collision(particle, particle) -> optional<TIME>
+    next_tethering_collision(particle, particle, radius) -> optional<TIME>
+
+    next_blocking_collision_with_p(particle, sequence<particle>) -> optional<two particles and time>
+
+    blocking_collision(rules_set, particle, particle) -> optional<two particles and time>
+    tethering_collision(rules_set, particle, particle, radious) -> optional<two particles and time>
+
+    next_exit(volume, sequence<particle>) -> optional<particle and time and direction>
+
+    next_triangle_colission(particle, sequence<triangle>) -> optional<particle and time and normal_vector and triangle species>
+    triangle_collision(particle and time and normal_vector and triangle species) -> particle
+
+
+
+
+
