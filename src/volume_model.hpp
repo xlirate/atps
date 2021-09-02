@@ -140,11 +140,9 @@ struct volume_model{
     }
 
     typename cadmium::make_message_bags<output_ports>::type output() const {
-
         typename cadmium::make_message_bags<output_ports>::type bag;
 
         for(auto move_msg : state.pending_moves){
-
             cadmium::get_messages<typename volume_defs<TIME, REAL, DIMS>::particle_leaving>(bag).push_back(move_msg);
         }
 
@@ -157,32 +155,41 @@ struct volume_model{
     }
 
     void internal_transition(){
-
         state.global_time += time_advance();
 
+        //We just got here from the output function, we can clear the queued updates.
         state.pending_updates.clear();
         state.pending_removals.clear();
         state.pending_moves.clear();
 
+        //set the next internal time to inf, we bring it down as we find particles that need internal transitions sooner
         state.next_internal_time = std::numeric_limits<TIME>::infinity();
 
         for(auto& kv : state.particles){
-
+            // k -> key, v -> value, very creative
             auto& k = kv.first;
             auto& v = kv.second;
 
+            // if the particle is leaving the volume right now, have it leave
+            // otherwise, if it has a deffered dv to apply right now, do so
+            // otherwise compare both the next time it would leave the volume and the next time it would have an deffered dv to the standing 'next_internal_time' and take the min
             TIME next_move_out_time = move_out_time(v, state.one_corner, state.size);
             if(next_move_out_time <= state.global_time){
+                //put the patricle into the moving-out queue, and add it to the removal update queue
+                //we would remove it from state.particles here, but that would invalidate our iterator, so we wait until we finish first
                 state.pending_moves.push_back({move_out_destination(v, state.one_corner, state.size, state.volume_id), v});
                 state.pending_removals.push_back(k);
             }else if(v.deferred_dv_time <= state.global_time){
-                v = advance_to_time(apply_dv(v), state.global_time);
+                //we simply calculate what the particle would look like after its dv is applied
+                //we could advance it to now, but the function alrady advances it to when the dv was going to be applied, so the diference should be negligable
+                v = apply_dv(v);
                 state.pending_updates.push_back(v.id);
             }else{
+                // std::min takes only 2 arguments, not variadic arguments, so we need to place 2 calls to resolve the min of 3 elements
                 state.next_internal_time = std::min(state.next_internal_time, std::min(next_move_out_time, v.deferred_dv_time));
             }
         }
-
+        //We remove all of the particles that move out of this volume here
         for(size_t i : state.pending_removals){
             state.particles.extract(i);
         }
@@ -192,6 +199,7 @@ struct volume_model{
         state.global_time += dt;
 
         for(const auto& move_msg : cadmium::get_messages<typename volume_defs<TIME, REAL, DIMS>::particle_entering>(mbs)){
+            //we take each moving particle who's destination is this volume and add it, and queue an update about it
             if(move_msg.destination_id == state.volume_id){
                 state.particles[move_msg.moving_particle.id] = move_msg.moving_particle;
                 state.pending_updates.push_back(move_msg.moving_particle.id);
@@ -201,12 +209,16 @@ struct volume_model{
         for(const auto& delta_msg : cadmium::get_messages<typename volume_defs<TIME, REAL, DIMS>::particle_delta>(mbs)){
             if(delta_msg.volume_id == state.volume_id){
                 if(state.particles.count(delta_msg.particle_id)){
+                    //for each incoming delta message, if we have a particle with that id, we apply the delta and queue an update message about it
                     auto& par = state.particles[delta_msg.particle_id];
-                    par = apply_delta(par, delta_msg);
+                    par = apply_delta(advance_to_time(par, state.global_time), delta_msg);
                     state.pending_updates.push_back(par.id);
                 }else{
                     for(auto& pp : state.pending_moves){
                         if(pp.moving_particle.id == delta_msg.particle_id){
+                            //it is possible for a delta to come in for a particle that is in the queue to leave this volume.
+                            //We do not want to miss deltas if we can avoid it, so we apply the delta here
+                            //There is no need to send an anouncement, as the volume that is going to get this particle is going to anounce it there
                             pp.moving_particle = apply_delta(pp.moving_particle, delta_msg);
                         }
                     }
