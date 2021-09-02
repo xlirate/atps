@@ -15,11 +15,20 @@ build_folder := $(shell mkdir -p build)
 results_folder := $(shell mkdir -p simulation_results)
 
 
-1d_4p_4v_test: 1d_4p_4v_test.o
-	$(CC) $(VARIABLES) -g -o bin/1d_4p_4v_test.out build/1d_4p_4v_test.o
 
 1d_4p_4v_test.o:
 	$(CC) -g -c $(CFLAGS) $(INCLUDECADMIUM) $(INCLUDEDESTIMES) $(INCLUDEJSON) $(VARIABLES) tests/1d_4p_4v_test.cpp -o build/1d_4p_4v_test.o
+1d_4p_4v_test: 1d_4p_4v_test.o
+	$(CC) $(VARIABLES) -g -o bin/1d_4p_4v_test.out build/1d_4p_4v_test.o
+
+
+
+1d_4p_4v_infinit_test.o:
+	$(CC) -g -c $(CFLAGS) $(INCLUDECADMIUM) $(INCLUDEDESTIMES) $(INCLUDEJSON) $(VARIABLES) tests/1d_4p_4v_infinit_test.cpp -o build/1d_4p_4v_infinit_test.o
+1d_4p_4v_infinit_test: 1d_4p_4v_infinit_test.o
+	$(CC) $(VARIABLES) -g -o bin/1d_4p_4v_infinit_test.out build/1d_4p_4v_infinit_test.o
+
+
 
 clean:
 	rm -f bin/* build/*
