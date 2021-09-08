@@ -9,8 +9,6 @@
 
 namespace tps{
 
-// std::tuple<std::array<long, DIMS>, std::size_t, std::array<REAL, DIMS>, std::array<REAL, DIMS>, TIME>
-
 
 template<typename TIME, typename REAL, std::size_t DIMS>
 struct particle_delta_message{

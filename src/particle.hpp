@@ -19,7 +19,7 @@ struct particle{
     std::array<REAL, DIMS> position;
     std::array<REAL, DIMS> velocity;
     std::array<REAL, DIMS> deferred_dv;
-    TIME deferred_dv_time; /* use this for no defered -> std::numeric_limits<TIME>::infinity */
+    TIME deferred_dv_time; /* use this for no defered -> std::numeric_limits<TIME>::infinity() */
 
 };
 
@@ -76,9 +76,9 @@ std::ostream &operator<<(std::ostream &os, const particle<TIME, REAL, DIMS> &p) 
         }
         os << vn;
     }
-
+    os << "]";
     if(p.deferred_dv_time != std::numeric_limits<TIME>::infinity()){
-        os << "], [";
+        os << ", [";
         first = true;
         for(const auto dn : p.deferred_dv){
             if(first){

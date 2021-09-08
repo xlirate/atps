@@ -35,7 +35,7 @@ int main(int argc, char ** argv) {
     // the particles get inited in order like this [last_updated, id, species, mass, radius, [position], [velocity], [deferred_dv], deferred_dv_time]
 
     std::shared_ptr<dynamic::modeling::model> vol_0 = dynamic::translate::make_dynamic_atomic_model<volume_model_1d, TIME>(
-        "vol_0", std::array<long, 1>{0}, std::array<double, 1>{0.0}, std::array<double, 1>{-std::numeric_limits<TIME>::infinity()},
+        "vol_0", std::array<long, 1>{0}, std::array<double, 1>{0.0}, std::array<double, 1>{-std::numeric_limits<double>::infinity()},
         std::vector<particle_1d<TIME>>{
             {{0}, {1}, {0}, {1}, {1}, {-1.01}, {0.05}, {0.03}, {0.9}},
             {{0}, {2}, {0}, {1}, {1}, {-4.04}, {0.05}, {0}, {std::numeric_limits<TIME>::infinity()}},
@@ -45,7 +45,7 @@ int main(int argc, char ** argv) {
     std::shared_ptr<dynamic::modeling::model> vol_2 = dynamic::translate::make_dynamic_atomic_model<volume_model_1d, TIME>(
         "vol_2", std::array<long, 1>{2}, std::array<double, 1>{2.0}, std::array<double, 1>{1.0});
     std::shared_ptr<dynamic::modeling::model> vol_3 = dynamic::translate::make_dynamic_atomic_model<volume_model_1d, TIME>(
-        "vol_3", std::array<long, 1>{3}, std::array<double, 1>{3.0}, std::array<double, 1>{std::numeric_limits<TIME>::infinity()},
+        "vol_3", std::array<long, 1>{3}, std::array<double, 1>{3.0}, std::array<double, 1>{std::numeric_limits<double>::infinity()},
         std::vector<particle_1d<TIME>>{
             {{0}, {3}, {0}, {1}, {1}, {6.9},  {-0.05}, {-0.03}, {0.6}},
             {{0}, {4}, {0}, {1}, {1}, {5.95}, {-0.05}, {0}, {std::numeric_limits<TIME>::infinity()}},
