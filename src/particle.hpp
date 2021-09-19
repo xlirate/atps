@@ -20,7 +20,7 @@ struct particle{
     std::array<REAL, DIMS> velocity;
     std::array<REAL, DIMS> deferred_dv;
     TIME deferred_dv_time; /* use this for no defered -> std::numeric_limits<TIME>::infinity() */
-
+    size_t hits_since_last_deferred_dv_clear;
 };
 
 //apply_dv(v)
@@ -31,18 +31,13 @@ particle<TIME, REAL, DIMS> apply_dv(particle<TIME, REAL, DIMS> par){
         par.velocity[i] += par.deferred_dv[i];
     }
     par.deferred_dv = {};
+    par.hits_since_last_deferred_dv_clear = 0;
     par.deferred_dv_time = std::numeric_limits<TIME>::infinity();
     return par;
 }
 
 template<typename TIME, typename REAL, std::size_t DIMS>
 particle<TIME, REAL, DIMS> advance_to_time(particle<TIME, REAL, DIMS> par, TIME t){
-    /*
-    if(t < par.last_updated){
-        std::cerr << "This particle was asked to go back in time. " << t << " is before " << par.last_updated << ".\n";
-    }
-    */
-
     auto dt = t - par.last_updated;
     for(size_t i=0; i<DIMS; i++){
         par.position[i] += par.velocity[i]*dt;
@@ -88,7 +83,7 @@ std::ostream &operator<<(std::ostream &os, const particle<TIME, REAL, DIMS> &p) 
             }
             os << dn;
         }
-        os << "], " << p.deferred_dv_time;
+        os << "], " << p.deferred_dv_time << ", " << p.hits_since_last_deferred_dv_clear;
     }
     return os << "]";
 }

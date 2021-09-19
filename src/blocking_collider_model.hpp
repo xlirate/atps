@@ -137,12 +137,10 @@ struct blocking_collider_model{
                             const auto& lp = lpkv.second;
                             for(const auto& rpkv : *std::get<0>(rv)){//for each particle in the second volume
                                 const auto& rp = rpkv.second;
-                                const TIME tt = blocking_collide_time(lp, rp);
+                                const TIME tt = blocking_collide_time(lp, rp, state.global_time);
                                 if(tt != std::numeric_limits<TIME>::infinity() && tt >= state.global_time){
-                                    std::cout << tt << " " << state.global_time;
                                     //check the collision
                                     if(lp.id < rp.id && tt < std::get<4>(lv)){
-                                        std::cout << " a\n";
                                         //this is the new hit for the left volume
                                         std::get<1>(lv) = lp.id;
                                         std::get<2>(lv) = rp.id;
@@ -150,15 +148,12 @@ struct blocking_collider_model{
                                         std::get<4>(lv) = tt;
 
                                     }else if(tt < std::get<4>(rv)){
-                                        std::cout << " b\n";
                                         //this is the new hit for the right volume
                                         std::get<1>(rv) = rp.id;
                                         std::get<2>(rv) = lp.id;
                                         std::get<3>(rv) = lk;
                                         std::get<4>(rv) = tt;
 
-                                    }else{
-                                        std::cout << " c\n";
                                     }
                                 }
                             }
@@ -168,16 +163,12 @@ struct blocking_collider_model{
             }
         }
 
-        std::cout << "find the next time ";
         for(const auto& kv : state.volumes){ //update the next internal time
             TIME tt = std::get<4>(kv.second);
-            std::cout << tt << " ";
             if(tt < state.next_internal_time){
                 state.next_internal_time = tt;
-                std::cout << "U ";
             }
         }
-        std::cout << "\n";
     }
 
     void confluence_transition(TIME, typename cadmium::make_message_bags<input_ports>::type mbs) {

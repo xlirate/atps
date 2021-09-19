@@ -28,14 +28,14 @@ def parse_msg_file(msg_file):
 def quantize_state_to_times(events, times):
     state = {}
     next_event = next(events, None)
-    print(0, next_event)
+    #print(0, next_event)
     for output_time in times:
         while next_event is not None and next_event[0] < output_time:
             event_time, pid, update_time, pos, vel = next_event
 
             state[pid] = (update_time, pos, vel)
             next_event = next(events, None)
-            print(output_time, next_event)
+            #print(output_time, next_event)
 
         out = {}
         for pid, (last_update_time, pos, vel) in state.items():
