@@ -22,36 +22,29 @@ def parse_msg_file(msg_file):
                 v_id, dv, leaving = json.loads(line[start_i:end_i])
 
                 for p_time, p_id, p_species, p_mass, p_radius, p_pos, p_vel, *p_deferred_dv_and_time in dv:
-                    yield([time, p_id, p_pos, p_vel])
+                    yield([time, p_id, p_time, p_pos, p_vel])
 
-
-def _quantize_state_to_times_output_helper(state, next_time):
-    out = dict()
-    for key, (update_time, po, ve) in state.items():
-        dt = next_time-update_time
-        out[key] = list([p+v*dt for p, v in zip(po, ve)])
-    return(out)
 
 def quantize_state_to_times(events, times):
-    marker = object()
-    times_iter = iter(times)
-    next_time = next(times_iter)
-    state = dict()
-    for time, p_id, pos, vel in events:
-        if time > next_time:
-            #we need to yield a snapshot before advancing
-            yield([next_time, _quantize_state_to_times_output_helper(state, next_time)])
+    state = {}
+    next_event = next(events, None)
+    print(0, next_event)
+    for output_time in times:
+        while next_event is not None and next_event[0] < output_time:
+            event_time, pid, update_time, pos, vel = next_event
 
-            next_time = next(times_iter, marker)
-            if next_time is marker:
-                #we have run out of requested times, so it is time to return
-                return
-        state[p_id] = (time, pos, vel)
-    #if we got here, we ran out of file before running out of times, so we prattel out all future positions in order
-    for t in times_iter:
-        yield([t, _quantize_state_to_times_output_helper(state, t)])
+            state[pid] = (update_time, pos, vel)
+            next_event = next(events, None)
+            print(output_time, next_event)
 
-def _float_range_helper(start, end, step):
+        out = {}
+        for pid, (last_update_time, pos, vel) in state.items():
+            out[pid] = list([p+v*(output_time-last_update_time) for p,v in zip(pos, vel)])
+        yield output_time, out
+
+
+
+def float_range_helper(start, end, step):
     while start <= end:
         yield(start)
         start += step
@@ -87,7 +80,7 @@ if __name__ == "__main__":
             print(f"step:{step} is <0, we can only walk forwards through the input, we cannot produce states out of order or in reverse order like this")
             exit(-1)
         with open(sys.argv[1]) as msg_file:
-            for state in quantize_state_to_times(parse_msg_file(msg_file), _float_range_helper(start, end, step)):
+            for state in quantize_state_to_times(parse_msg_file(msg_file), float_range_helper(start, end, step)):
                 print(state)
 
     else:

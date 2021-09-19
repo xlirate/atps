@@ -27,15 +27,21 @@ results_folder := $(shell mkdir -p simulation_results)
 	$(CC) $(VARIABLES) -g -o bin/1d_4p_4v_infinit_test.out build/1d_4p_4v_infinit_test.o
 
 
-2d_2d_1v_blocking_collider_test.o:
-	$(CC) -g -c $(CFLAGS) $(INCLUDECADMIUM) $(INCLUDEDESTIMES) $(INCLUDEJSON) $(VARIABLES) tests/2d_2d_1v_blocking_collider_test.cpp -o build/2d_2d_1v_blocking_collider_test.o
-2d_2d_1v_blocking_collider_test: 2d_2d_1v_blocking_collider_test.o
-	$(CC) $(VARIABLES) -g -o bin/2d_2d_1v_blocking_collider_test.out build/2d_2d_1v_blocking_collider_test.o
+2d_2p_1v_blocking_collider_test.o:
+	$(CC) -g -c $(CFLAGS) $(INCLUDECADMIUM) $(INCLUDEDESTIMES) $(INCLUDEJSON) $(VARIABLES) tests/2d_2p_1v_blocking_collider_test.cpp -o build/2d_2p_1v_blocking_collider_test.o
+2d_2p_1v_blocking_collider_test: 2d_2p_1v_blocking_collider_test.o
+	$(CC) $(VARIABLES) -g -o bin/2d_2p_1v_blocking_collider_test.out build/2d_2p_1v_blocking_collider_test.o
+
+
+2d_3p_1v_ping_pong_test.o:
+	$(CC) -g -c $(CFLAGS) $(INCLUDECADMIUM) $(INCLUDEDESTIMES) $(INCLUDEJSON) $(VARIABLES) tests/2d_3p_1v_ping_pong_test.cpp -o build/2d_3p_1v_ping_pong_test.o
+2d_3p_1v_ping_pong_test: 2d_3p_1v_ping_pong_test.o
+	$(CC) $(VARIABLES) -g -o bin/2d_3p_1v_ping_pong_test.out build/2d_3p_1v_ping_pong_test.o
 
 
 clean:
 	rm -f bin/* build/*
 
 
-all: clean 1d_4p_4v_test 1d_4p_4v_infinit_test 2d_2d_1v_blocking_collider_test
+all: clean 1d_4p_4v_test 1d_4p_4v_infinit_test 2d_2p_1v_blocking_collider_test 2d_3p_1v_ping_pong_test
 

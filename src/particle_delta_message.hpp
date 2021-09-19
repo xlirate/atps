@@ -22,6 +22,7 @@ struct particle_delta_message{
 
 template<typename TIME, typename REAL, std::size_t DIMS>
 particle<TIME, REAL, DIMS> apply_delta(particle<TIME, REAL, DIMS> par, particle_delta_message<TIME, REAL, DIMS> delta_msg){
+    std::cout << "delta_applied " << par << " and " << delta_msg << "\n";
     for(size_t i = 0; i<DIMS; i++){
         par.velocity[i] += delta_msg.dv[i];
         par.deferred_dv[i] += delta_msg.deferred_dv[i];
