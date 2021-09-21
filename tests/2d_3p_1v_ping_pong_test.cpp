@@ -42,9 +42,9 @@ int main(int argc, char ** argv) {
     std::shared_ptr<dynamic::modeling::model> vol_0 = dynamic::translate::make_dynamic_atomic_model<volume_model_2d, TIME>(
         "vol_0", std::array<long, 2>{0, 0}, std::array<REAL, 2>{-100.0, -100.0}, std::array<REAL, 2>{std::numeric_limits<REAL>::infinity(), std::numeric_limits<REAL>::infinity()},
         std::vector<particle_2d<TIME>>{
-            {{0}, {1}, {0}, {1000000}, {1}, {0,  0}, {1,  1}, {0}, {std::numeric_limits<TIME>::infinity()}},
-            {{0}, {2}, {0},       {1}, {1}, {0,  5}, {1,  0}, {0}, {std::numeric_limits<TIME>::infinity()}},
-            {{0}, {3}, {0}, {1000000}, {1}, {0, 10}, {1, -1}, {0}, {std::numeric_limits<TIME>::infinity()}},
+            {{0}, {1}, {0}, {1'000'000}, {1}, {0,  0}, {1,  1}, {0}, {std::numeric_limits<TIME>::infinity()}},
+            {{0}, {2}, {0},         {1}, {1}, {0,  5}, {1,  0}, {0}, {std::numeric_limits<TIME>::infinity()}},
+            {{0}, {3}, {0}, {1'000'000}, {1}, {0, 10}, {1, -1}, {0}, {std::numeric_limits<TIME>::infinity()}},
         });
 
     std::shared_ptr<dynamic::modeling::model> b_col = dynamic::translate::make_dynamic_atomic_model<blocking_collider_model_2d, TIME>("b_col");

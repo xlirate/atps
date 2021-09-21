@@ -41,8 +41,8 @@ int main(int argc, char ** argv) {
     std::shared_ptr<dynamic::modeling::model> vol_0 = dynamic::translate::make_dynamic_atomic_model<volume_model_2d, TIME>(
         "vol_0", std::array<long, 2>{0, 0}, std::array<double, 2>{0.0, 0.0}, std::array<double, 2>{std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()},
         std::vector<particle_2d<TIME>>{
-            {{0}, {1}, {0}, {1}, {1}, {10, 60}, {2, -10}, {0}, {std::numeric_limits<TIME>::infinity()}},
-            {{0}, {2}, {0}, {3}, {1}, {10, 40}, {2,  10}, {0}, {std::numeric_limits<TIME>::infinity()}},
+            {{0}, {2}, {0}, {1}, {1}, {10, 60}, {2, -10}, {0}, {std::numeric_limits<TIME>::infinity()}},
+            {{0}, {1}, {0}, {3}, {1}, {10, 40}, {2,  10}, {0}, {std::numeric_limits<TIME>::infinity()}},
         });
 
     std::shared_ptr<dynamic::modeling::model> b_col = dynamic::translate::make_dynamic_atomic_model<blocking_collider_model_2d, TIME>("b_col");

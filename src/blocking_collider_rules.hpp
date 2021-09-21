@@ -116,12 +116,12 @@ std::array<particle_delta_message<TIME, REAL, DIMS>, 2> blocking_collide(particl
     for(std::size_t i = 0; i<DIMS; i++){
         unit_relative_position[i] = relative_position[i]/relative_position_s;
         unit_relative_velocity[i] = relative_velocity[i]/relative_velocity_s;
-        relative_dot += unit_relative_position[i]*unit_relative_velocity[i];
+        relative_dot += unit_relative_position[i]*std::abs(unit_relative_velocity[i]);
     }
 
     std::array<REAL, DIMS> impulse = {};
     for(std::size_t i = 0; i<DIMS; i++){
-        impulse[i] = relative_velocity[i]*unit_relative_position[i]*(1-losses);
+        impulse[i] = relative_dot*relative_velocity[i]*unit_relative_position[i]*(1-losses);
     }
 
     for(std::size_t i = 0; i<DIMS; i++){
